@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { cn } from 'zero-cnn';
 import { X } from 'lucide-react';
@@ -11,6 +11,13 @@ import {
 } from 'framer-motion';
 
 const Dialog = DialogPrimitive.Root;
+
+const DialogRoot = ({
+    children,
+    ...props
+}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root>) => {
+    return <DialogPrimitive.Root {...props}>{children}</DialogPrimitive.Root>;
+};
 
 const DialogTrigger = DialogPrimitive.Trigger;
 
@@ -48,31 +55,47 @@ type MotionContentType = CustomDomComponent<
     DialogPrimitive.DialogContentProps & React.RefAttributes<HTMLDivElement>
 >;
 
+const variants = {
+    initials: {
+        scale: 0.5,
+        opacity: 1,
+        backgroundColor: 'white',
+    },
+    open: {
+        scale: 1,
+        backgroundColor: 'red',
+    },
+    closed: {
+        scale: 0.8,
+        backgroundColor: 'blue',
+    },
+};
+
 const Content = React.forwardRef<
     React.ElementRef<typeof DialogPrimitive.Content>,
     React.ComponentPropsWithoutRef<MotionContentType>
 >(({ children, className, ...props }, ref) => {
+    const [isOk, setIsOk] = React.useState(false);
+
     return (
         <Portal>
             <Overlay />
             <MotionContent
-                initial={{
-                    scale: 0.5,
-                    top: '40%',
-                    backgroundColor: 'blue',
-                }}
-                animate={{ scale: 1, top: '50%', backgroundColor: 'red' }}
+                variants={variants}
+                animate={isOk ? 'open' : 'closed'}
+                initial="initials"
                 style={{
                     translateX: '-50%',
                     translateY: '-50%',
                 }}
                 className={cn(
                     // -translate-x-1/2 -translate-y-1/2
-                    'transition-all  fixed  left-[50%] h-1/3 max-h-xl w-3/4 sm:w-2/3 sm:max-w-2xl lg:w-1/3 lg:max-w-xl  rounded-lg p-6 shadow-[10px_10px_10px_black] focus:outline-none',
+                    'origin-top transition-all  fixed top-[50%]  left-[50%] h-1/3 max-h-xl w-3/4 sm:w-2/3 sm:max-w-2xl lg:w-1/3 lg:max-w-xl  rounded-lg p-6 shadow-[10px_10px_10px_black] focus:outline-none',
                     className
                 )}
                 {...props}
             >
+                <button onClick={() => setIsOk((p) => !p)}>aa</button>
                 {children}
                 <DialogClose />
             </MotionContent>
@@ -80,43 +103,6 @@ const Content = React.forwardRef<
     );
 });
 Content.displayName = 'Content';
-
-// const MotionContent = motion(DialogPrimitive.Content);
-
-// type MotionContentType = CustomDomComponent<
-//     DialogPrimitive.DialogContentProps & React.RefAttributes<HTMLDivElement>
-// >;
-// export const AAContent = React.forwardRef<
-//     React.ElementRef<typeof DialogPrimitive.Content>,
-//     React.ComponentPropsWithoutRef<MotionContentType>
-// >(({ children, className, ...props }, ref) => {
-//     const containerRef = React.useRef<HTMLDivElement>(null);
-//     // const inView = useInView(containerRef, { amount: 0.2 });
-//     // console.log(inView);
-
-//     const [isOk, setIsOk] = React.useState(false);
-//     return (
-//         <Portal>
-//             <Overlay />
-
-//             <MotionContent
-//                 ref={containerRef}
-//                 // initial={{ scale: 0.5 }}
-//                 // whileHover={{ scale: 1.5 }}
-//                 className={cn(
-//                     'transition-all -translate-x-1/2 -tray12 fixed top-[50%] left-[50%]  h-1/3 max-h-xl w-3/4 sm:w-2/3 sm:max-w-2xl lg:w-1/3 lg:max-w-xl rounded-lg bg-white p-6 shadow-[10px_10px_10px_black] focus:outline-none',
-//                     className
-//                 )}
-//                 {...props}
-//             >
-//                 {children}
-
-//                 <DialogClose />
-//             </MotionContent>
-//         </Portal>
-//     );
-// });
-// AAContent.displayName = 'Content';
 
 const Header = ({
     children,
@@ -200,15 +186,4 @@ export {
     DialogDescription,
     DialogFooter,
     DialogClose,
-    //
-    Root,
-    Trigger,
-    Portal,
-    Overlay,
-    Content,
-    Header,
-    Title,
-    Description,
-    Close,
-    Footer,
 };

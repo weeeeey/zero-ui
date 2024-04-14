@@ -1,52 +1,45 @@
 'use client';
+import React, { useEffect } from 'react';
 
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+import * as Counter from '@/utils/counter';
+// import { State } from '@/utils/counter';
 
-import React from 'react';
-
-const HomePage = () => {
+const MainP = () => {
     return (
-        <div className="w-full h-full px-10 py-10 space-y-4">
-            <h2 className="font-semibold text-xl">React</h2>
+        <>
+            <Com1 />
+            <Com2 />
+        </>
+    );
+};
 
-            <Dialog>
-                <DialogTrigger>Open</DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Title</DialogTitle>
-                        <DialogDescription>description</DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <div className="text-right">Name</div>
-                            <input
-                                id="name"
-                                defaultValue="Pedro Duarte"
-                                className="col-span-3"
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <div className="text-right">Username</div>
-                            <input
-                                id="username"
-                                defaultValue="@peduarte"
-                                className="col-span-3"
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>Save changes</DialogFooter>
-                </DialogContent>
-            </Dialog>
+const store = Counter.createStore({ count: 0 });
+
+const Com1 = () => {
+    const [state, setState] = Counter.useStore(store);
+
+    const handleClick = () => {
+        setState((prev) => ({ count: prev.count + 1 }));
+    };
+    return (
+        <div>
+            <h3>{state.count}</h3>
+            <button onClick={handleClick}>+</button>
+        </div>
+    );
+};
+const Com2 = () => {
+    const [state, setState] = Counter.useStore(store);
+
+    const handleClick = () => {
+        setState((prev) => ({ count: prev.count + 1 }));
+    };
+    return (
+        <div>
+            <h3>{state.count}</h3>
+            <button onClick={handleClick}>+</button>
         </div>
     );
 };
 
-export default HomePage;
+export default MainP;
